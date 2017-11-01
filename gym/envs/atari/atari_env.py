@@ -71,7 +71,6 @@ class AtariEnv(gym.Env, utils.EzPickle):
     def _step(self, a):
         reward = 0.0
         action = self._action_set[a]
-        lives_before_step = self.ale.lives()
 
         if isinstance(self.frameskip, int):
             num_steps = self.frameskip
@@ -80,10 +79,8 @@ class AtariEnv(gym.Env, utils.EzPickle):
         for _ in range(num_steps):
             reward += self.ale.act(action)
         ob = self._get_obs()
-        lives_after_step = self.ale.lives()
-        done = self.ale.game_over() or (lives_before_step != lives_after_step)
 
-        return ob, reward, done, {"ale.lives": self.ale.lives()}
+        return ob, reward, self.ale.game_over(), {"ale.lives": self.ale.lives()}
 
     def _get_image(self):
         return self.ale.getScreenRGB2()
